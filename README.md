@@ -72,7 +72,7 @@ A recipe assistant where users can register, manage their personal pantry, gener
 - Java 17+
 - Maven 3.6+
 - Lombok
-- MySQL 8 (with database `buzz` created)
+- MySQL 8 (with database `recipedia` created)
 
 ### Frontend
 - Node.js >= 16
