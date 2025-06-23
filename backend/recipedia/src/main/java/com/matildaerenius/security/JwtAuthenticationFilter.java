@@ -21,16 +21,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private JwtTokenProvider jwtTokenProvider;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain chain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain chain)
+            throws ServletException, IOException {
 
         String header = req.getHeader(jwtTokenProvider.getJwtHeader());
 
         if (header != null && header.startsWith("Bearer ")) {
             String token = header.substring(7);
             try {
-                String email = jwtTokenProvider.getEmailFromJwtToken(token);
+                String username = jwtTokenProvider.getUsernameFromToken(token);
+
                 Authentication auth = new UsernamePasswordAuthenticationToken(
-                        email, null, List.of()
+                        username, null, List.of() // för framtiden, authorities kan sättas senare
                 );
                 SecurityContextHolder.getContext().setAuthentication(auth);
             } catch (JwtException e) {
@@ -41,5 +43,4 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         chain.doFilter(req, res);
     }
-
 }
