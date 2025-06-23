@@ -2,6 +2,7 @@ package com.matildaerenius.service.impl;
 
 import com.matildaerenius.dto.request.LoginRequest;
 import com.matildaerenius.dto.request.RegisterRequest;
+import com.matildaerenius.dto.request.UpdateUserRequest;
 import com.matildaerenius.dto.response.AuthResponse;
 import com.matildaerenius.entity.User;
 import com.matildaerenius.repository.UserRepository;
@@ -57,5 +58,18 @@ public class UserServiceImpl implements UserService {
 
         String token = jwtTokenProvider.generateToken(user.getUsername());
         return new AuthResponse(token, user.getUsername());
+    }
+
+    @Override
+    public User updateUser(String username, UpdateUserRequest request) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (request.getFirstName() != null) user.setFirstName(request.getFirstName());
+        if (request.getLastName() != null) user.setLastName(request.getLastName());
+        if (request.getAddress() != null) user.setAddress(request.getAddress());
+        if (request.getPreference() != null) user.setPreference(request.getPreference());
+
+        return userRepository.save(user);
     }
 }
