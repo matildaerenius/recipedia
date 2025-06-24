@@ -6,4 +6,5 @@ spring.jpa.hibernate.ddl-auto=update
 
 # JWT
 jwt.header=Authorization
+jwt.expiration-ms=86400000
 jwt.secret=put_a_very_long_random_string_here
