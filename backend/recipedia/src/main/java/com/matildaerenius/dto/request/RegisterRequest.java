@@ -25,6 +25,7 @@ public class RegisterRequest {
     private String address;
 
     @Email(message = "Email should be valid")
+    @NotBlank
     private String email;
 
     private Preference preference;
