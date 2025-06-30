@@ -10,5 +10,8 @@ public interface UserService {
         AuthResponse register(RegisterRequest request);
         AuthResponse login(LoginRequest request);
         User updateUser(String username, UpdateUserRequest request);
+        void deleteUserByUsername(String username);
+        String getUsernameFromToken(String token);
+
 }
 

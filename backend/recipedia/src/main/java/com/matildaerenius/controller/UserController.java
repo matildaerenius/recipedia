@@ -21,4 +21,12 @@ public class UserController {
         User updatedUser = userService.updateUser(username, request);
         return ResponseEntity.ok(updatedUser);
     }
+
+    @DeleteMapping("/delete")
+    public ResponseEntity<String> deleteUser(@RequestHeader("Authorization") String token) {
+        String username = userService.getUsernameFromToken(token);
+        userService.deleteUserByUsername(username);
+        return ResponseEntity.ok("User deleted successfully");
+    }
+
 }
