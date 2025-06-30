@@ -6,13 +6,15 @@ import com.matildaerenius.dto.request.UpdateUserRequest;
 import com.matildaerenius.dto.response.AuthResponse;
 import com.matildaerenius.entity.User;
 import com.matildaerenius.repository.UserRepository;
-import com.matildaerenius.security.JwtTokenProvider;
+import com.matildaerenius.security.util.JwtTokenProvider;
 import com.matildaerenius.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor
@@ -26,7 +28,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public AuthResponse register(RegisterRequest request) {
         if (userRepository.existsByUsername(request.getUsername())) {
-            throw new RuntimeException("Username already exists");
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Username already exists");
         }
 
         User user = User.builder()
@@ -34,6 +36,7 @@ public class UserServiceImpl implements UserService {
                 .password(passwordEncoder.encode(request.getPassword()))
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
+                .email(request.getEmail())
                 .address(request.getAddress())
                 .preference(request.getPreference())
                 .build();

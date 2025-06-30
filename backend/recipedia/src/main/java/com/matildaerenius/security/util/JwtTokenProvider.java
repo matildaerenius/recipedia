@@ -1,4 +1,4 @@
-package com.matildaerenius.security;
+package com.matildaerenius.security.util;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
@@ -44,10 +44,6 @@ public class JwtTokenProvider {
     }
 
     public String getUsernameFromToken(String token) {
-        if (token.startsWith("Bearer ")) {
-            token = token.substring(7);
-        }
-
         return Jwts.parserBuilder()
                 .setSigningKey(key)
                 .build()
@@ -55,6 +51,7 @@ public class JwtTokenProvider {
                 .getBody()
                 .getSubject();
     }
+
 
     public boolean validateToken(String token) {
         try {
