@@ -6,12 +6,16 @@ import com.matildaerenius.dto.request.UpdateUserRequest;
 import com.matildaerenius.dto.response.AuthResponse;
 import com.matildaerenius.entity.User;
 import com.matildaerenius.repository.UserRepository;
+import com.matildaerenius.security.service.CustomUserDetailsService;
 import com.matildaerenius.security.util.JwtTokenProvider;
 import com.matildaerenius.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -24,11 +28,17 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthenticationManager authenticationManager;
+    private final CustomUserDetailsService customUserDetailsService;
+
 
     @Override
     public AuthResponse register(RegisterRequest request) {
         if (userRepository.existsByUsername(request.getUsername())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Username already exists");
+        }
+        if (request.getPassword().length() < 8 || !request.getPassword().matches(".*[A-Z].*")) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Password must be at least 8 characters and contain an uppercase letter.");
         }
 
         User user = User.builder()
@@ -49,12 +59,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public AuthResponse login(LoginRequest request) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getUsername(),
-                        request.getPassword()
-                )
-        );
+        authenticate(request.getUsername(), request.getPassword());
 
         User user = userRepository.findByUsername(request.getUsername())
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -75,4 +80,15 @@ public class UserServiceImpl implements UserService {
 
         return userRepository.save(user);
     }
+
+    private Authentication authenticate(String username, String password) {
+        UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
+
+        if (userDetails == null || !passwordEncoder.matches(password, userDetails.getPassword())) {
+            throw new BadCredentialsException("Invalid username or password");
+        }
+
+        return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+    }
+
 }
