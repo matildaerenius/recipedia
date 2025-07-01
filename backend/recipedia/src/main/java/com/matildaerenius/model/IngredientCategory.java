@@ -8,5 +8,8 @@ public enum IngredientCategory {
     DAIRY,
     GRAIN,
     SPICE,
+    FROZEN,
+    LEGUME,
+    SAUCE,
     OTHER
 }
