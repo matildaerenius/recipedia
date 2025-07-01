@@ -11,6 +11,8 @@ public class CreateIngredientRequest {
     @NotBlank
     private String name;
 
+    private int quantity;
+
     @NotNull
     IngredientCategory category;
 }

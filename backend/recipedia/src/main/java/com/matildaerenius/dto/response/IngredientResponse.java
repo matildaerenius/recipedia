@@ -10,5 +10,6 @@ public class IngredientResponse {
 
     private Integer id;
     private String name;
+    private int quantity;
     private IngredientCategory category;
 }

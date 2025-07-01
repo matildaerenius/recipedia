@@ -10,4 +10,6 @@ public interface IngredientService {
     List<IngredientResponse> getUserIngredients(String token);
     void deleteIngredient(String token, Long ingredientId);
     IngredientResponse updateIngredient(String token, Long ingredientId, String name, IngredientCategory category);
+    List<IngredientResponse> searchIngredients(String token, String name, IngredientCategory category);
+
 }

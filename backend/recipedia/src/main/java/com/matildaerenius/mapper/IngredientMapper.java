@@ -9,6 +9,7 @@ public class IngredientMapper {
         return new IngredientResponse(
                 ingredient.getId(),
                 ingredient.getName(),
+                ingredient.getQuantity(),
                 ingredient.getCategory()
         );
     }

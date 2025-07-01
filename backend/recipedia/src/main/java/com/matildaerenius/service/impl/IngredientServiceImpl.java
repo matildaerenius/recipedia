@@ -85,4 +85,15 @@ public class IngredientServiceImpl implements IngredientService {
         Ingredient updated = ingredientRepository.save(ingredient);
         return toDto(updated);
     }
+
+    @Override
+    public List<IngredientResponse> searchIngredients(String token, String name, IngredientCategory category) {
+        User user = getUserFromToken(token);
+        return ingredientRepository.findByUser(user).stream()
+                .filter(i -> (name == null || i.getName().toLowerCase().contains(name.toLowerCase())) &&
+                        (category == null || i.getCategory() == category))
+                .map(IngredientMapper::toDto)
+                .collect(Collectors.toList());
     }
+
+}

@@ -6,5 +6,6 @@ import lombok.Data;
 @Data
 public class UpdateIngredientRequest {
     private String name;
+    private Integer quantity;
     private IngredientCategory category;
 }

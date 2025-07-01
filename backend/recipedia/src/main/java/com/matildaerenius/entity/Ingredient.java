@@ -21,6 +21,9 @@ public class Ingredient {
     @Column(nullable = false)
     private String name;
 
+    @Column(nullable = false)
+    private int quantity;
+
     @Enumerated(EnumType.STRING)
     private IngredientCategory category;
 
