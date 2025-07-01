@@ -3,6 +3,7 @@ package com.matildaerenius.controller;
 import com.matildaerenius.dto.request.CreateIngredientRequest;
 import com.matildaerenius.dto.request.UpdateIngredientRequest;
 import com.matildaerenius.dto.response.IngredientResponse;
+import com.matildaerenius.model.IngredientCategory;
 import com.matildaerenius.service.IngredientService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -47,6 +48,16 @@ public class IngredientController {
     ) {
         return ingredientService.updateIngredient(token, id, request.getName(), request.getCategory());
     }
+
+    @GetMapping("/search")
+    public List<IngredientResponse> searchIngredients(
+            @RequestHeader("Authorization") String token,
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) IngredientCategory category
+    ) {
+        return ingredientService.searchIngredients(token, name, category);
+    }
+
 
     @DeleteMapping("/batch")
     public void deleteMultiple(
