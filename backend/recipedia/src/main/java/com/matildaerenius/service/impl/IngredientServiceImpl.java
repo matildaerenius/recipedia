@@ -31,9 +31,6 @@ public class IngredientServiceImpl implements IngredientService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
     }
 
-
-
-
         @Override
         public IngredientResponse addIngredient(String token, String name, IngredientCategory category) {
             User user = getUserFromToken(token);
@@ -95,5 +92,20 @@ public class IngredientServiceImpl implements IngredientService {
                 .map(IngredientMapper::toDto)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public void deleteMultipleIngredients(String token, List<Long> ids) {
+        User user = getUserFromToken(token);
+        List<Ingredient> ingredients = ingredientRepository.findAllById(ids);
+
+        for (Ingredient i : ingredients) {
+            if (!i.getUser().getId().equals(user.getId())) {
+                throw new UserException("You don't own ingredient " + i.getName());
+            }
+        }
+
+        ingredientRepository.deleteAll(ingredients);
+    }
+
 
 }

@@ -47,4 +47,13 @@ public class IngredientController {
     ) {
         return ingredientService.updateIngredient(token, id, request.getName(), request.getCategory());
     }
+
+    @DeleteMapping("/batch")
+    public void deleteMultiple(
+            @RequestHeader("Authorization") String token,
+            @RequestBody List<Long> ids
+    ) {
+        ingredientService.deleteMultipleIngredients(token, ids);
+    }
+
 }

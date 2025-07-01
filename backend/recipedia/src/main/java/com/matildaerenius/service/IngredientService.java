@@ -11,5 +11,7 @@ public interface IngredientService {
     void deleteIngredient(String token, Long ingredientId);
     IngredientResponse updateIngredient(String token, Long ingredientId, String name, IngredientCategory category);
     List<IngredientResponse> searchIngredients(String token, String name, IngredientCategory category);
+    void deleteMultipleIngredients(String token, List<Long> ids);
+
 
 }
