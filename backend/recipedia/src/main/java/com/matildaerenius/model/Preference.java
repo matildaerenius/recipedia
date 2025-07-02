@@ -5,5 +5,7 @@ public enum Preference {
     VEGAN,
     VEGETARIAN,
     LACTOSE_FREE,
-    GLUTEN_FREE
+    GLUTEN_FREE,
+    DAIRY_FREE,
+    NUT_FREE
 }
