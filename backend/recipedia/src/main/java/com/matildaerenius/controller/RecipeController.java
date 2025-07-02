@@ -2,8 +2,10 @@ package com.matildaerenius.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.matildaerenius.dto.response.SpoonacularRecipeResponse;
 import com.matildaerenius.entity.Ingredient;
 import com.matildaerenius.entity.User;
+import com.matildaerenius.exception.UserException;
 import com.matildaerenius.integration.SpoonacularService;
 import com.matildaerenius.repository.IngredientRepository;
 import com.matildaerenius.repository.UserRepository;
@@ -13,9 +15,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/recipes")
@@ -33,13 +33,9 @@ public class RecipeController {
             Authentication authentication) {
 
         String username = authentication.getName();
-        Optional<User> optionalUser = userRepository.findByUsername(username);
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UserException("User not found"));
 
-        if (optionalUser.isEmpty()) {
-            return ResponseEntity.status(404).body("User not found");
-        }
-
-        User user = optionalUser.get();
         List<Ingredient> ingredients = ingredientRepository.findByUser(user);
 
         List<String> ingredientNames = ingredients.stream()
@@ -54,12 +50,12 @@ public class RecipeController {
         String recipesJson = spoonacularService.getRecipes(ingredientNames, threshold);
 
         try {
-            List<Map<String, Object>> recipes = objectMapper.readValue(
+            List<SpoonacularRecipeResponse> recipes = objectMapper.readValue(
                     recipesJson, new TypeReference<>() {});
 
             if (threshold == 1.0) {
                 recipes = recipes.stream()
-                        .filter(recipe -> ((int) recipe.getOrDefault("missedIngredientCount", 0)) == 0)
+                        .filter(recipe -> recipe.getMissedIngredientCount() == 0)
                         .collect(Collectors.toList());
             }
 
@@ -73,4 +69,15 @@ public class RecipeController {
             return ResponseEntity.status(500).body("Failed to parse recipe response: " + e.getMessage());
         }
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getRecipeDetails(@PathVariable int id) {
+        try {
+            String detailsJson = spoonacularService.getRecipeDetails(id);
+            return ResponseEntity.ok(objectMapper.readTree(detailsJson));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Failed to retrieve recipe: " + e.getMessage());
+        }
+    }
+
 }

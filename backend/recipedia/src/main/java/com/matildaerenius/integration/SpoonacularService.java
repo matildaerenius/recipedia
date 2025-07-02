@@ -38,4 +38,18 @@ public class SpoonacularService {
 
         return response.getBody();
     }
+
+    public String getRecipeDetails(int recipeId) {
+        URI uri = UriComponentsBuilder.newInstance()
+                .scheme("https")
+                .host("api.spoonacular.com")
+                .path("/recipes/" + recipeId + "/information")
+                .queryParam("includeNutrition", false)
+                .queryParam("apiKey", apiKey)
+                .build()
+                .toUri();
+
+        return restTemplate.getForObject(uri, String.class);
+    }
+
 }

@@ -25,12 +25,13 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(HttpClientErrorException.TooManyRequests.class)
     public ResponseEntity<ErrorDetails> handleTooManyRequests(HttpClientErrorException.TooManyRequests ex, WebRequest request) {
         ErrorDetails details = new ErrorDetails(
-                "API limit reached: Too many requests to Spoonacular.",
+                "You've reached the daily Spoonacular API limit (150 requests/day). Please try again tomorrow.",
                 request.getDescription(false),
                 LocalDateTime.now()
         );
         return new ResponseEntity<>(details, HttpStatus.TOO_MANY_REQUESTS);
     }
+
     @ExceptionHandler(RestClientException.class)
     public ResponseEntity<ErrorDetails> handleRestClient(RestClientException ex, WebRequest request) {
         ErrorDetails details = new ErrorDetails(
