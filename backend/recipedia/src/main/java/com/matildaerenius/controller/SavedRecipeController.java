@@ -1,6 +1,7 @@
 package com.matildaerenius.controller;
 
 import com.matildaerenius.dto.request.SaveRecipeRequest;
+import com.matildaerenius.dto.response.SavedRecipeResponse;
 import com.matildaerenius.entity.SavedRecipe;
 import com.matildaerenius.entity.User;
 import com.matildaerenius.exception.UserException;
@@ -27,15 +28,16 @@ public class SavedRecipeController {
     }
 
     @PostMapping("/save")
-    public ResponseEntity<?> saveRecipe(@RequestBody SaveRecipeRequest request,
-                                        Authentication authentication) {
-        savedRecipeService.saveRecipe(request, getCurrentUser(authentication));
-        return ResponseEntity.ok("Recipe saved!");
+    public ResponseEntity<SavedRecipeResponse> saveRecipe(@RequestBody SaveRecipeRequest request,
+                                                          Authentication authentication) {
+        String username = authentication.getName();
+        SavedRecipeResponse response = savedRecipeService.saveRecipe(request, username);
+        return ResponseEntity.ok(response);
     }
-
     @GetMapping
-    public ResponseEntity<List<SavedRecipe>> getUserRecipes(Authentication authentication) {
-        return ResponseEntity.ok(savedRecipeService.getSavedRecipes(getCurrentUser(authentication)));
+    public ResponseEntity<List<SavedRecipeResponse>> getUserRecipes(Authentication authentication) {
+        String username = authentication.getName();
+        return ResponseEntity.ok(savedRecipeService.getUserRecipes(username));
     }
 
     @DeleteMapping("/{id}")
