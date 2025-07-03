@@ -44,6 +44,10 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Ingredient> ingredients = new ArrayList<>();
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<SavedRecipe> savedRecipes = new ArrayList<>();
+
+
 
     // TODO: Relations till ingredienser, meal plans osv.
 }

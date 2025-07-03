@@ -51,4 +51,10 @@ public class GlobalExceptionHandler {
         );
         return new ResponseEntity<>(details, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    @ExceptionHandler(DuplicateRecipeException.class)
+    public ResponseEntity<String> handleDuplicateRecipe(DuplicateRecipeException ex) {
+        return ResponseEntity.status(409).body(ex.getMessage());
+    }
+
 }
