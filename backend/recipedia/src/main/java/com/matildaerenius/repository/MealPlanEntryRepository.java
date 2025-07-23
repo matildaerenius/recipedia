@@ -1,4 +1,7 @@
 package com.matildaerenius.repository;
 
-public interface MealPlanEntryRepository {
+import com.matildaerenius.entity.MealPlanEntry;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface MealPlanEntryRepository extends JpaRepository<MealPlanEntry, Long> {
 }

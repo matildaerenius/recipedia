@@ -1,11 +1,13 @@
-package com.matildaerenius.dto.request;
+package com.matildaerenius.dto.response;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.time.DayOfWeek;
 
 @Data
-public class MealPlanRequest {
+@AllArgsConstructor
+public class MealPlanEntryResponse {
     private DayOfWeek dayOfWeek;
     private Long recipeId;
     private String title;
