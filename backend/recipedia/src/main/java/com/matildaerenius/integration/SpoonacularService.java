@@ -39,7 +39,7 @@ public class SpoonacularService {
         return response.getBody();
     }
 
-    public String getRecipeDetails(int recipeId) {
+    public String getRecipeDetails(Long recipeId) {
         URI uri = UriComponentsBuilder.newInstance()
                 .scheme("https")
                 .host("api.spoonacular.com")
@@ -49,7 +49,8 @@ public class SpoonacularService {
                 .build()
                 .toUri();
 
-        return restTemplate.getForObject(uri, String.class);
+        ResponseEntity<String> response = restTemplate.getForEntity(uri, String.class);
+        return response.getBody();
     }
 
 }

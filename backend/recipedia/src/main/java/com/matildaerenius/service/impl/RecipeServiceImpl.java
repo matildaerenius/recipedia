@@ -53,7 +53,7 @@ public class RecipeServiceImpl implements RecipeService {
     }
 
     @Override
-    public String getRecipeDetails(int recipeId) {
+    public String getRecipeDetails(Long recipeId) {
         return spoonacularService.getRecipeDetails(recipeId);
     }
 }

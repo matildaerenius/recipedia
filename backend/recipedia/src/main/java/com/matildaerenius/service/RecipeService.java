@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface RecipeService {
     List<SpoonacularRecipeResponse> generateRecipes(User user, double matchThreshold);
-    String getRecipeDetails(int recipeId);
+    String getRecipeDetails(Long recipeId);
 }

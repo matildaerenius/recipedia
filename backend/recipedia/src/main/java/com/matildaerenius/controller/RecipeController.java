@@ -50,7 +50,7 @@ public class RecipeController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getRecipeDetails(@PathVariable int id) {
+    public ResponseEntity<?> getRecipeDetails(@PathVariable Long id) {
         try {
             String detailsJson = recipeService.getRecipeDetails(id);
             return ResponseEntity.ok(objectMapper.readTree(detailsJson));
