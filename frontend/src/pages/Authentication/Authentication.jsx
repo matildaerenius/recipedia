@@ -5,47 +5,56 @@ import "./auth.css";
 
 const Authentication = () => {
   const [isRegistering, setIsRegistering] = useState(false);
+  const [animating, setAnimating] = useState(false);
+
+  const toggleMode = () => {
+    setAnimating(true);
+    setTimeout(() => {
+      setIsRegistering((prev) => !prev);
+      setAnimating(false);
+    }, 300);
+  };
 
   return (
     <div className="auth-container">
-      <div className={`auth-box ${isRegistering ? "register-mode" : ""}`}>
-        <div className="form-wrapper">
-          <div
-            className={`form-panel login-panel ${
-              isRegistering ? "hidden" : ""
-            }`}
-          >
-            <h2>Login</h2>
-            <Login />
-            <p className="switch-text">
-              Don’t have an account?{" "}
-              <span onClick={() => setIsRegistering(true)}>Register</span>
-            </p>
-          </div>
-
-          <div
-            className={`form-panel register-panel ${
-              isRegistering ? "" : "hidden"
-            }`}
-          >
-            <h2>Register</h2>
-            <Register />
-            <p className="switch-text">
-              Already have an account?{" "}
-              <span onClick={() => setIsRegistering(false)}>Login</span>
-            </p>
-          </div>
+      {/* Left side – form */}
+      <div className="form-side">
+        <div className={`form-box ${animating ? "fade-out" : "fade-in"}`}>
+          {isRegistering ? (
+            <>
+              <h2>Register</h2>
+              <Register />
+              <p>
+                Already have an account? <span onClick={toggleMode}>Login</span>
+              </p>
+            </>
+          ) : (
+            <>
+              <h2>Login</h2>
+              <Login />
+              <p>
+                Don’t have an account?{" "}
+                <span onClick={toggleMode}>Register</span>
+              </p>
+            </>
+          )}
         </div>
+      </div>
 
-        <div className="info-panel">
-          <div className="overlay-text">
-            <h3>{isRegistering ? "Welcome Back!" : "New here?"}</h3>
-            <p>
-              {isRegistering
-                ? "Login to access your recipes and meal plans."
-                : "Create an account and explore Recipedia."}
-            </p>
-          </div>
+      {/* Right side – info */}
+      <div className="info-side">
+        <div className={`info-box ${animating ? "fade-out" : "fade-in"}`}>
+          {isRegistering ? (
+            <>
+              <h3>Welcome Back!</h3>
+              <p>Login to access your favorite recipes and your meal plans!</p>
+            </>
+          ) : (
+            <>
+              <h3>New here?</h3>
+              <p>Create an account and explore Recipedia</p>
+            </>
+          )}
         </div>
       </div>
     </div>
