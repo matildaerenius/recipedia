@@ -7,7 +7,7 @@ import { Eye, EyeOff } from "lucide-react";
 import * as Yup from "yup";
 import "./auth.css";
 
-const initialValues = { username: "", password: "" };
+const initialValues = { username: "", password: "", stayLoggedIn: false };
 
 const validationSchema = Yup.object().shape({
   username: Yup.string().required("Username is required"),
@@ -20,7 +20,9 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = (values) => {
-    dispatch(loginUserAction(values, navigate));
+    const { stayLoggedIn, ...credentials } = values;
+
+    dispatch(loginUserAction(credentials, navigate, stayLoggedIn));
   };
 
   return (
@@ -64,8 +66,19 @@ const Login = () => {
           component="div"
           className="error-message"
         />
+        <div className="stay-logged-in">
+          <label className="toggle-label">
+            <Field
+              type="checkbox"
+              name="stayLoggedIn"
+              className="toggle-input"
+            />
+            <span className="toggle-slider" />
+            <span className="toggle-text">Stay logged in</span>
+          </label>
+        </div>
 
-        {/* Submit */}
+        {}
         <button type="submit" className="submit-btn">
           Sign in
         </button>
