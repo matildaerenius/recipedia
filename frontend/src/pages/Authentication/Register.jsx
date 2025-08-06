@@ -1,6 +1,7 @@
 import React, { useState } from "react";
+import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
+
 import { registerUserAction } from "../../Redux/Auth/auth.action";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import { Eye, EyeOff } from "lucide-react";
@@ -20,18 +21,18 @@ const validationSchema = Yup.object().shape({
   firstName: Yup.string().required("First name is required"),
   lastName: Yup.string().required("Last name is required"),
   username: Yup.string().required("Username is required"),
-  email: Yup.string().email("Invalid").required("Email is required"),
+  email: Yup.string().email("Invalid email").required("Email is required"),
   address: Yup.string().required("Address is required"),
   password: Yup.string().min(6).required("Password is required"),
 });
 
-const Register = () => {
+const Register = ({ setIsRegistering }) => {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
+  const { loading } = useSelector((state) => state.auth);
   const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = (values) => {
-    dispatch(registerUserAction(values, navigate));
+    dispatch(registerUserAction(values, setIsRegistering));
   };
 
   return (
@@ -98,12 +99,11 @@ const Register = () => {
           className="error-message"
         />
 
-        <button type="submit" className="submit-btn">
-          Sign up
+        <button type="submit" className="submit-btn" disabled={loading}>
+          {loading ? "Registering..." : "Register"}
         </button>
       </Form>
     </Formik>
   );
 };
-
 export default Register;

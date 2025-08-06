@@ -1,11 +1,18 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import Login from "./Login";
 import Register from "./Register";
+import { CLEAR_AUTH_MESSAGES } from "../../Redux/Auth/auth.actionType";
 import "./auth.css";
+
+console.log("AUTH component loaded");
 
 const Authentication = () => {
   const [isRegistering, setIsRegistering] = useState(false);
   const [animating, setAnimating] = useState(false);
+
+  const dispatch = useDispatch();
+  const { message, error } = useSelector((state) => state.auth);
 
   const toggleMode = () => {
     setAnimating(true);
@@ -15,6 +22,15 @@ const Authentication = () => {
     }, 300);
   };
 
+  useEffect(() => {
+    if (message || error) {
+      const timer = setTimeout(() => {
+        dispatch({ type: CLEAR_AUTH_MESSAGES });
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [message, error, dispatch]);
+
   return (
     <div className="auth-container">
       {/* Left side – form */}
@@ -23,7 +39,8 @@ const Authentication = () => {
           {isRegistering ? (
             <>
               <h2>Register</h2>
-              <Register />
+              <Register setIsRegistering={setIsRegistering} />
+
               <p>
                 Already have an account? <span onClick={toggleMode}>Login</span>
               </p>
@@ -31,6 +48,7 @@ const Authentication = () => {
           ) : (
             <>
               <h2>Login</h2>
+
               <Login />
               <p>
                 Don’t have an account?{" "}
