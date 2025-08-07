@@ -1,4 +1,4 @@
-import axios from "../../config/axiosConfig";
+import axiosPublic from "../../config/axiosPublic"; 
 import {
   LOGIN_REQUEST,
   LOGIN_SUCCESS,
@@ -15,7 +15,7 @@ export const loginUserAction = (credentials, navigate, stayLoggedIn) => async (d
   dispatch({ type: LOGIN_REQUEST });
 
   try {
-    const { data } = await axios.post("/auth/login", credentials);
+    const { data } = await axiosPublic.post("/auth/login", credentials);
     if (stayLoggedIn) {
       localStorage.setItem("jwt", data.token);
     } else {
@@ -45,7 +45,7 @@ export const registerUserAction = (userData, setIsRegistering) => async (dispatc
   dispatch({ type: LOGIN_REQUEST });
 
   try {
-    const { data } = await axios.post("/auth/register", userData); 
+    const { data } = await axiosPublic.post("/auth/register", userData); 
     localStorage.setItem("jwt", data.token);
     
 

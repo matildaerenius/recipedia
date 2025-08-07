@@ -1,0 +1,185 @@
+.inventory-page {
+    padding: 6rem 2rem 2rem;
+    background: linear-gradient(to bottom right, #ffe0b2, #ffecb3);
+    min-height: 100vh;
+    overflow-y: auto;
+  }
+  
+  .inventory-header {
+    font-size: 2.2rem;
+    margin-bottom: 1rem;
+    font-weight: bold;
+    color: #333;
+    text-align: center;
+  }
+  
+  .add-button {
+    display: block;
+    margin: 0 auto 2.5rem auto;
+    padding: 0.7rem 1.5rem;
+    font-size: 1rem;
+    background-color: #ff9800;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    color: white;
+    transition: background-color 0.3s;
+  }
+  
+  .add-button:hover {
+    background-color: #fb8c00;
+  }
+  
+  .inventory-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.5rem;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+  
+  .category-card {
+    background-color: #fff3e0;
+    border-radius: 10px;
+    padding: 1rem;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    min-height: 180px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  
+  .category-title {
+    font-weight: 700;
+    margin-bottom: 0.8rem;
+    font-size: 1.1rem;
+    color: #333;
+    text-transform: uppercase;
+    text-align: center;
+  }
+  
+  .ingredient-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.95rem;
+    color: #444;
+    padding: 0.3rem 0;
+  }
+  
+  .delete-btn {
+    background: none;
+    border: none;
+    color: red;
+    font-size: 1.1rem;
+    cursor: pointer;
+  }
+  
+  .category-card ul,
+  .category-card .ingredients-scroll {
+    flex: 1;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    padding-right: 0.5rem;
+  }
+  .modal {
+    background: #fff8f0;
+    padding: 2rem;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 450px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    position: relative;
+    animation: fadeIn 0.3s ease-in-out;
+  }
+  .modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+    padding: 1rem; 
+    overflow: auto;
+  }
+  
+  
+  @keyframes fadeIn {
+    from {
+      transform: translateY(-20px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+  
+  .modal h2 {
+    margin-bottom: 1.2rem;
+    text-align: center;
+    font-size: 1.5rem;
+    color: #333;
+  }
+  
+  .modal form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .modal input,
+  .modal select {
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background: #fff;
+    transition: border-color 0.3s;
+  }
+  
+  .modal input:focus,
+  .modal select:focus {
+    outline: none;
+    border-color: #ff9800;
+    box-shadow: 0 0 0 2px rgba(255, 152, 0, 0.2);
+  }
+  
+  .submit-btn {
+    padding: 0.75rem;
+    background-color: #4caf50;
+    border: none;
+    color: white;
+    font-size: 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.3s;
+  }
+  
+  .submit-btn:hover {
+    background-color: #388e3c;
+  }
+  
+  .close-btn {
+    margin-top: 1rem;
+    background: none;
+    border: none;
+    color: #d32f2f;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 0.95rem;
+    text-align: center;
+    transition: color 0.2s;
+  }
+  
+  .close-btn:hover {
+    color: #b71c1c;
+  }
+  
+  
