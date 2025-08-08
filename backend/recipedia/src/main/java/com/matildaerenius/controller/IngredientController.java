@@ -46,7 +46,7 @@ public class IngredientController {
             @PathVariable Long id,
             @RequestBody @Valid UpdateIngredientRequest request
     ) {
-        return ingredientService.updateIngredient(token, id, request.getName(), request.getCategory());
+        return ingredientService.updateIngredient(token, id, request.getName(),  request.getQuantity(), request.getCategory());
     }
 
     @GetMapping("/search")

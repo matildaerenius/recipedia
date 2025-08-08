@@ -68,7 +68,7 @@ public class IngredientServiceImpl implements IngredientService {
         }
 
     @Override
-    public IngredientResponse updateIngredient(String token, Long ingredientId, String name, IngredientCategory category) {
+    public IngredientResponse updateIngredient(String token, Long ingredientId, String name, Integer quantity, IngredientCategory category) {
         User user = getUserFromToken(token);
         Ingredient ingredient = ingredientRepository.findById(ingredientId)
                 .orElseThrow(() -> new RuntimeException("Ingredient not found"));
@@ -78,7 +78,11 @@ public class IngredientServiceImpl implements IngredientService {
         }
 
         if (name != null) ingredient.setName(name);
+        if (quantity != null) {
+            ingredient.setQuantity(quantity);
+        }
         if (category != null) ingredient.setCategory(category);
+
 
         Ingredient updated = ingredientRepository.save(ingredient);
         return toDto(updated);
