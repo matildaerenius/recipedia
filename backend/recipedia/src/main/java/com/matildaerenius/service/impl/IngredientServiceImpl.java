@@ -32,11 +32,12 @@ public class IngredientServiceImpl implements IngredientService {
     }
 
         @Override
-        public IngredientResponse addIngredient(String token, String name, IngredientCategory category) {
+        public IngredientResponse addIngredient(String token, String name, int quantity, IngredientCategory category) {
             User user = getUserFromToken(token);
 
             Ingredient ingredient = Ingredient.builder()
                     .name(name)
+                    .quantity(quantity)
                     .category(category)
                     .user(user)
                     .build();

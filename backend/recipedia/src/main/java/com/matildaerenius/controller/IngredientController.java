@@ -23,7 +23,7 @@ public class IngredientController {
             @RequestHeader("Authorization") String token,
             @RequestBody @Valid CreateIngredientRequest request
     ) {
-        return ingredientService.addIngredient(token, request.getName(), request.getCategory());
+        return ingredientService.addIngredient(token, request.getName(), request.getQuantity(), request.getCategory());
     }
 
     @GetMapping
