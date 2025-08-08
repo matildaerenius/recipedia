@@ -1,7 +1,9 @@
 .inventory-page {
     padding: 6rem 2rem 2rem;
     background: linear-gradient(to bottom right, #ffe0b2, #ffecb3);
+    font-family: 'Quicksand', sans-serif;
     min-height: 100vh;
+    margin: 0;
     overflow-y: auto;
   }
   
@@ -68,13 +70,36 @@
     padding: 0.3rem 0;
   }
   
+  .ingredient-actions {
+    display: flex;
+    gap: 0.4rem; 
+  }
+  
+  .edit-btn,
   .delete-btn {
     background: none;
     border: none;
-    color: red;
     font-size: 1.1rem;
     cursor: pointer;
+    padding: 2px 6px;
   }
+  
+  .edit-btn {
+    color: #1976d2; 
+  }
+  
+  .edit-btn:hover {
+    color: #0d47a1;
+  }
+  
+  .delete-btn {
+    color: red;
+  }
+  
+  .delete-btn:hover {
+    color: darkred;
+  }
+  
   
   .category-card ul,
   .category-card .ingredients-scroll {
@@ -181,5 +206,31 @@
   .close-btn:hover {
     color: #b71c1c;
   }
+  .inventory-header,
+.category-title,
+.add-button,
+.submit-btn,
+.close-btn {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+}
   
+  .inventory-page::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  .inventory-page::-webkit-scrollbar-track {
+    background: #ffe0b2;
+    border-radius: 10px;
+  }
+  
+  .inventory-page::-webkit-scrollbar-thumb {
+    background: #ff9800;
+    border-radius: 10px;
+  }
+  
+  .inventory-page::-webkit-scrollbar-thumb:hover {
+    background: #fb8c00;
+  }
+
   

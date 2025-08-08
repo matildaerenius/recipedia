@@ -3,6 +3,7 @@ import {
     ADD_INGREDIENT,
     DELETE_INGREDIENT,
     INVENTORY_ERROR,
+    UPDATE_INGREDIENT_SUCCESS,
   } from "./inventory.actionType";
   
   const initialState = {
@@ -26,6 +27,14 @@ import {
   
       case INVENTORY_ERROR:
         return { ...state, error: "Something went wrong." };
+        case UPDATE_INGREDIENT_SUCCESS:
+  return {
+    ...state,
+    ingredients: state.ingredients.map((ing) =>
+      ing.id === action.payload.id ? action.payload : ing
+    ),
+  };
+
   
       default:
         return state;

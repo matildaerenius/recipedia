@@ -3,6 +3,7 @@ import {
   GET_INGREDIENTS,
   ADD_INGREDIENT,
   DELETE_INGREDIENT,
+  UPDATE_INGREDIENT_SUCCESS,
   INVENTORY_ERROR,
 } from "./inventory.actionType";
 import { toast } from "react-toastify";
@@ -38,3 +39,11 @@ export const deleteIngredient = (id) => async (dispatch) => {
     toast.error("Failed to delete ingredient");
   }
 };
+export const updateIngredient = (id, updatedData) => async (dispatch) => {
+    try {
+      const res = await axiosInstance.put(`/api/ingredients/${id}`, updatedData);
+      dispatch({ type: UPDATE_INGREDIENT_SUCCESS, payload: res.data });
+    } catch (error) {
+      console.error("Update failed", error);
+    }
+  };

@@ -4,6 +4,7 @@ import {
   getIngredients,
   addIngredient,
   deleteIngredient,
+  updateIngredient,
 } from "../../Redux/Inventory/inventory.action.js";
 import "./Inventory.css";
 
@@ -24,11 +25,12 @@ const CATEGORIES = [
 const Inventory = () => {
   const dispatch = useDispatch();
   const { ingredients } = useSelector((state) => state.inventory);
+  const [editIngredient, setEditIngredient] = useState(null);
 
   const [modalOpen, setModalOpen] = useState(false);
   const [newIngredient, setNewIngredient] = useState({
     name: "",
-    category: "VEGETABLE",
+    category: "OTHER",
     quantity: 1,
   });
 
@@ -40,11 +42,16 @@ const Inventory = () => {
     e.preventDefault();
     dispatch(addIngredient(newIngredient));
     setModalOpen(false);
-    setNewIngredient({ name: "", category: "VEGETABLE", quantity: 1 });
+    setNewIngredient({ name: "", category: "OTHER", quantity: 1 });
   };
 
   const handleDelete = (id) => {
     dispatch(deleteIngredient(id));
+  };
+  const handleUpdate = (e) => {
+    e.preventDefault();
+    dispatch(updateIngredient(editIngredient.id, editIngredient));
+    setEditIngredient(null);
   };
 
   const ingredientsByCategory = CATEGORIES.reduce((acc, cat) => {
@@ -67,13 +74,23 @@ const Inventory = () => {
             <div className="ingredients-scroll">
               {ingredientsByCategory[category]?.map((item) => (
                 <div key={item.id} className="ingredient-item">
-                  {item.name} ({item.quantity ?? 0})
-                  <button
-                    className="delete-btn"
-                    onClick={() => handleDelete(item.id)}
-                  >
-                    ✖
-                  </button>
+                  <span>
+                    {item.name} ({item.quantity ?? 0})
+                  </span>
+                  <div className="ingredient-actions">
+                    <button
+                      className="edit-btn"
+                      onClick={() => setEditIngredient(item)}
+                    >
+                      ✎
+                    </button>
+                    <button
+                      className="delete-btn"
+                      onClick={() => handleDelete(item.id)}
+                    >
+                      ✖
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
@@ -112,7 +129,7 @@ const Inventory = () => {
                 onChange={(e) =>
                   setNewIngredient({
                     ...newIngredient,
-                    category: e.target.value,
+                    category: e.target.value.toUpperCase(),
                   })
                 }
               >
@@ -128,6 +145,60 @@ const Inventory = () => {
             </form>
             <button className="close-btn" onClick={() => setModalOpen(false)}>
               Close
+            </button>
+          </div>
+        </div>
+      )}
+      {editIngredient && (
+        <div className="modal-backdrop" onClick={() => setEditIngredient(null)}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <h2>Edit Ingredient</h2>
+            <form onSubmit={handleUpdate}>
+              <input
+                type="text"
+                value={editIngredient.name}
+                onChange={(e) =>
+                  setEditIngredient({
+                    ...editIngredient,
+                    name: e.target.value,
+                  })
+                }
+              />
+              <input
+                type="number"
+                min="1"
+                value={editIngredient.quantity}
+                onChange={(e) =>
+                  setEditIngredient({
+                    ...editIngredient,
+                    quantity: parseInt(e.target.value),
+                  })
+                }
+              />
+              <select
+                value={editIngredient.category}
+                onChange={(e) =>
+                  setEditIngredient({
+                    ...editIngredient,
+                    category: e.target.value,
+                  })
+                }
+              >
+                {CATEGORIES.map((cat) => (
+                  <option key={cat} value={cat}>
+                    {cat}
+                  </option>
+                ))}
+              </select>
+              <button type="submit" className="submit-btn">
+                Save
+              </button>
+            </form>
+            <button
+              className="close-btn"
+              onClick={() => setEditIngredient(null)}
+            >
+              Cancel
             </button>
           </div>
         </div>
