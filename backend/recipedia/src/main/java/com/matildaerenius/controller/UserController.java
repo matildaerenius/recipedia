@@ -2,6 +2,7 @@ package com.matildaerenius.controller;
 
 import com.matildaerenius.dto.request.UpdateUserRequest;
 import com.matildaerenius.entity.User;
+import com.matildaerenius.model.Preference;
 import com.matildaerenius.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -28,5 +29,27 @@ public class UserController {
         userService.deleteUserByUsername(username);
         return ResponseEntity.ok("User deleted successfully");
     }
+    @GetMapping("/me")
+    public ResponseEntity<User> me() {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userService.getByUsername(username); // lägg till i service
+        return ResponseEntity.ok(user);
+    }
+    @GetMapping("/preference")
+    public ResponseEntity<Preference> getPreference() {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        Preference pref = userService.getByUsername(username).getPreference();
+        return ResponseEntity.ok(pref);
+    }
+
+    @PutMapping("/preference")
+    public ResponseEntity<User> setPreference(@RequestBody Preference preference) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        UpdateUserRequest req = new UpdateUserRequest();
+        req.setPreference(preference);
+        User updated = userService.updateUser(username, req);
+        return ResponseEntity.ok(updated);
+    }
+
 
 }

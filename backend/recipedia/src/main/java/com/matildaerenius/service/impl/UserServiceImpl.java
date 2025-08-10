@@ -75,6 +75,8 @@ public class UserServiceImpl implements UserService {
 
         if (request.getFirstName() != null) user.setFirstName(request.getFirstName());
         if (request.getLastName() != null) user.setLastName(request.getLastName());
+        if (request.getEmail() != null) user.setEmail(request.getEmail());
+        if (request.getUsername() != null) user.setUsername(request.getUsername());
         if (request.getAddress() != null) user.setAddress(request.getAddress());
         if (request.getPreference() != null) user.setPreference(request.getPreference());
 
@@ -95,6 +97,11 @@ public class UserServiceImpl implements UserService {
             token = token.substring(7);
         }
         return jwtTokenProvider.getUsernameFromToken(token);
+    }
+    @Override
+    public User getByUsername(String username) {
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
     }
 
 

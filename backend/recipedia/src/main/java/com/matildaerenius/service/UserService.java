@@ -12,6 +12,7 @@ public interface UserService {
         User updateUser(String username, UpdateUserRequest request);
         void deleteUserByUsername(String username);
         String getUsernameFromToken(String token);
+        User getByUsername(String username);
 
 }
 
