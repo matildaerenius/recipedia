@@ -1,0 +1,119 @@
+.profile-page {
+    padding: 6rem 2rem 2rem;
+    min-height: 100vh;
+    background: linear-gradient(to bottom right, #ffe0b2, #ffecb3);
+    font-family: 'Quicksand', sans-serif;
+  }
+  
+  .profile-grid {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+  }
+  
+  .profile-card {
+    background: #fff7ed;
+    border-radius: 14px;
+    padding: 1.5rem;
+    box-shadow: 0 10px 24px rgba(0,0,0,0.08);
+  }
+  
+  .profile-card h2 {
+    margin: 0 0 0.75rem 0;
+    font-weight: 700;
+    color: #333;
+  }
+  
+  .hint {
+    margin: 0 0 1rem 0;
+    color: #666;
+    font-size: 0.95rem;
+  }
+  
+  .profile-two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.9rem;
+  }
+  
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    margin-bottom: 0.8rem;
+  }
+  
+  .form-group label {
+    font-size: 0.9rem;
+    color: #444;
+  }
+  
+  .form-group input {
+    padding: 0.7rem 0.9rem;
+    border-radius: 10px;
+    border: 1px solid #e0d6cc;
+    background: #fff;
+    font-family: inherit;
+    font-size: 1rem;
+  }
+  
+  .primary-btn {
+    padding: 0.7rem 1.2rem;
+    background: #ff9800;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.2s ease;
+  }
+  
+  .primary-btn:hover {
+    filter: brightness(0.97);
+  }
+  
+  .profile-error {
+    background: #ffe6ea;
+    color: #c62828;
+    border-radius: 10px;
+    padding: 0.7rem 1rem;
+    margin: 0.6rem 0 0.9rem 0;
+    font-size: 0.95rem;
+  }
+  
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin: 0.7rem 0 1rem;
+  }
+  
+  .chip {
+    padding: 0.45rem 0.9rem;
+    background: #fff;
+    color: #333;
+    border: 1px solid #ffcc80;
+    border-radius: 999px;
+    cursor: pointer;
+    font-weight: 600;
+  }
+  
+  .chip-active {
+    background: #ffedd5;
+    border-color: #ff9800;
+  }
+  
+  .divider {
+    border: none;
+    border-top: 1px solid #f0e4d6;
+    margin: 1rem 0;
+  }
+  
+  @media (max-width: 920px) {
+    .profile-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  
