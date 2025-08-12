@@ -30,11 +30,12 @@ public class RecipeController {
     @GetMapping("/generate")
     public ResponseEntity<?> generateRecipes(
             @RequestParam(defaultValue = "100") String match,
+            @RequestParam(defaultValue = "20") int limit,
             Authentication authentication) {
         try {
             User user = getCurrentUser(authentication);
-            double threshold = match.equals("80") ? 0.8 : 1.0;
-            List<SpoonacularRecipeResponse> recipes = recipeService.generateRecipes(user, threshold);
+            double threshold = "80".equals(match) ? 0.8 : 1.0;
+            List<SpoonacularRecipeResponse> recipes = recipeService.generateRecipes(user, threshold, limit);
 
             if (recipes.isEmpty()) {
                 return ResponseEntity.ok("No recipes matched your ingredients.");

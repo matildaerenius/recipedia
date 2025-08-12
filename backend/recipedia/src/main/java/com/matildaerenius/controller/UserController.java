@@ -32,7 +32,7 @@ public class UserController {
     @GetMapping("/me")
     public ResponseEntity<User> me() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userService.getByUsername(username); // lägg till i service
+        User user = userService.getByUsername(username);
         return ResponseEntity.ok(user);
     }
     @GetMapping("/preference")

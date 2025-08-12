@@ -23,7 +23,7 @@ public class RecipeServiceImpl implements RecipeService {
     private final ObjectMapper objectMapper;
 
     @Override
-    public List<SpoonacularRecipeResponse> generateRecipes(User user, double matchThreshold) {
+    public List<SpoonacularRecipeResponse> generateRecipes(User user, double matchThreshold, int limit) {
         List<Ingredient> ingredients = ingredientRepository.findByUser(user);
         List<String> ingredientNames = ingredients.stream()
                 .map(Ingredient::getName)
@@ -33,7 +33,7 @@ public class RecipeServiceImpl implements RecipeService {
             throw new IllegalArgumentException("No ingredients found for user");
         }
 
-        String json = spoonacularService.getRecipes(ingredientNames, matchThreshold);
+        String json = spoonacularService.getRecipes(ingredientNames, matchThreshold, limit);
 
         try {
             List<SpoonacularRecipeResponse> recipes = objectMapper.readValue(

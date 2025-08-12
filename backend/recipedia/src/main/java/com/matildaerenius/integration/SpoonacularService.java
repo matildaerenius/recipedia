@@ -19,7 +19,8 @@ public class SpoonacularService {
 
     private final RestTemplate restTemplate = new RestTemplate();
 
-    public String getRecipes(List<String> ingredients, double matchThreshold) {
+    public String getRecipes(List<String> ingredients, double matchThreshold, int limit) {
+        int capped = Math.max(1, Math.min(limit, 50));
         String ingredientsParam = String.join(",", ingredients);
 
         URI uri = UriComponentsBuilder.newInstance()
@@ -27,7 +28,7 @@ public class SpoonacularService {
                 .host("api.spoonacular.com")
                 .path("/recipes/findByIngredients")
                 .queryParam("ingredients", ingredientsParam)
-                .queryParam("number", 10)
+                .queryParam("number", capped)
                 .queryParam("ranking", matchThreshold >= 1.0 ? 1 : 2)
                 .queryParam("ignorePantry", true)
                 .queryParam("apiKey", apiKey)

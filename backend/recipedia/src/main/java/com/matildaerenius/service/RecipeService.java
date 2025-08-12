@@ -6,6 +6,6 @@ import com.matildaerenius.entity.User;
 import java.util.List;
 
 public interface RecipeService {
-    List<SpoonacularRecipeResponse> generateRecipes(User user, double matchThreshold);
+    List<SpoonacularRecipeResponse> generateRecipes(User user, double matchThreshold, int limit);
     String getRecipeDetails(Long recipeId);
 }
