@@ -50,6 +50,7 @@ button,.btn,.search-button{ font-family:'Poppins',sans-serif; font-weight:600; l
   padding: 28px 24px;
   margin: 0 auto 34px;
   text-align: center;
+  margin-bottom: 22px;
   background: linear-gradient(180deg, var(--card), var(--card-elev));
 }
 .search-header-content {
@@ -59,7 +60,11 @@ button,.btn,.search-button{ font-family:'Poppins',sans-serif; font-weight:600; l
   gap: 16px;
   padding: 18px 0;
 }
-
+.recipe-card{
+  --pad: 14px;              
+  padding: var(--pad);
+  position: relative;
+}
 
 .search-header h1 {
   font-family: 'Poppins', sans-serif;
@@ -99,6 +104,27 @@ button,.btn,.search-button{ font-family:'Poppins',sans-serif; font-weight:600; l
   accent-color: var(--primary);
   transform: scale(1.1);
 }
+.like-bubble{
+  position: absolute;
+  top: calc(var(--pad) - 10px);   
+  right: calc(var(--pad) - 2px);
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  line-height: 0;
+  border-radius: 999px;
+  border: 1px solid rgba(0,0,0,.08);
+  background: #fff;
+  display: grid;
+  place-items: center;           
+  cursor: pointer;
+  box-shadow: 0 6px 14px rgba(0,0,0,.12);
+  transition: transform .12s ease, box-shadow .2s ease, border-color .2s ease, background-color .2s ease;
+  z-index: 3;                    
+}
+.like-bubble:hover{ transform: translateY(-1px); box-shadow: 0 10px 22px rgba(0,0,0,.16); }
+.like-bubble:active{ transform: translateY(0); }
+.like-bubble.active{ background:#fff7f9; border-color:#ffc7d3; }
 
 
 .likes-pill {
@@ -134,8 +160,9 @@ button,.btn,.search-button{ font-family:'Poppins',sans-serif; font-weight:600; l
 /* ===== RESPONSIVE GRID (fills width) ===== */
 .recipe-grid{
   display:grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 22px;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 360px));
+  gap: 24px;
+  
 }
 
 /* ===== CARD ===== */
@@ -148,10 +175,11 @@ button,.btn,.search-button{ font-family:'Poppins',sans-serif; font-weight:600; l
   display:flex; flex-direction:column;
   transition: transform .12s ease, box-shadow .2s ease, border-color .2s ease;
   isolation: isolate; 
+  
 }
 .recipe-card:hover{
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
+  transform: translateY(-3px);
+  box-shadow: 0 14px 30px rgba(0,0,0,.14);;
   border-color:#e8cc9f;
 }
 
@@ -162,6 +190,7 @@ button,.btn,.search-button{ font-family:'Poppins',sans-serif; font-weight:600; l
   overflow:hidden;
   background:#f3f3f3;
   border:1px solid #efd9ba;
+  position: relative;
 }
 .image-wrap img{
   width:100%; height:100%; display:block; object-fit:cover;
@@ -171,8 +200,12 @@ button,.btn,.search-button{ font-family:'Poppins',sans-serif; font-weight:600; l
 
 
 .title{
-  margin: 10px 4px 4px;
-  font-size: 1.05rem; line-height: 1.35; color: var(--text);
+  margin: 10px;
+  font-size: 1rem; 
+  line-height: 1.35; 
+  color: var(--text); 
+  min-height: 2.8em; 
+  letter-spacing: .1px;
   font-weight: 700;
   display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
   min-height: 3.0em;  
@@ -180,10 +213,10 @@ button,.btn,.search-button{ font-family:'Poppins',sans-serif; font-weight:600; l
 
 
 .badges{
-  display:flex; gap:10px; flex-wrap:wrap; margin: 4px 4px 8px;
+  display:flex; gap:8px; flex-wrap:wrap; margin: 4px 4px 8px;
 }
 .badge{
-  font-size:.88rem; padding:4px 10px; border-radius:999px;
+  font-size:.85rem; padding:3px 10px; border-radius:999px;
   background:#fff; border:1px solid rgba(0,0,0,.08);
   color:var(--muted);
 }
@@ -191,9 +224,7 @@ button,.btn,.search-button{ font-family:'Poppins',sans-serif; font-weight:600; l
 .badge-warn{ color:var(--danger); background:rgba(198,40,40,.1); border-color:rgba(198,40,40,.22); }
 
 
-.card-footer{
-  margin-top:auto; display:flex; gap:8px;
-}
+
 .btn{
   flex:1; min-height: 40px;
   padding:.5rem .8rem; border-radius:10px; border:none;
@@ -202,20 +233,48 @@ button,.btn,.search-button{ font-family:'Poppins',sans-serif; font-weight:600; l
 }
 .btn:active{ transform: translateY(1px); }
 
-
-.btn-like{
-  background:#fff2dd; color:#333; border:1px solid #ffd6a7;
+.card-footer.only-primary{
+  justify-content: center;
+  padding-top: 6px;
 }
-.btn-like:hover{ background:#ffe3bd; }
-.btn-like .heart{ color:#9c8f84; transition: transform .15s ease, color .15s ease; }
-.btn-like.active .heart{ color:var(--heart); }
-.btn-like:hover .heart{ transform: scale(1.12); }
 
 
-.btn-primary{
-  background:#ff9800; color:#fff; box-shadow: var(--ring);
+.card-footer.only-primary .btn-primary{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  min-height: 36px;
+  padding: .45rem 1rem;
+  border-radius: 999px;
+  background: #fff2dd;              
+  color: var(--primary-600);
+  border: 1px solid #ffd6a7;
+  box-shadow: none;
+  width: 100%;
+  text-align: center;
+  
 }
-.btn-primary:hover{ background:#fb8c00; }
+.card-footer.only-primary .btn-primary:hover{
+  background: linear-gradient(180deg, var(--primary), var(--primary-600));
+  color: #fff;
+  border-color: transparent;
+  box-shadow: var(--ring);
+}
+.card-footer.only-primary .btn-primary::after{
+  content: "›";
+  font-weight: 700;
+  transform: translateY(-1px);
+}
+.card-footer.only-primary .btn-primary:focus-visible{
+  outline: 3px solid rgba(255,152,0,.35);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(255,152,0,.15);
+}
+.recipe-card:hover .like-toggle{ transform: translateY(-1px); }
+.recipe-card{ padding-bottom: 16px; }
+.badges{ margin-bottom: 8px; }
+
 
 
 .loading,.no-recipes{
@@ -237,6 +296,41 @@ button,.btn,.search-button{ font-family:'Poppins',sans-serif; font-weight:600; l
   outline: 3px solid rgba(255,152,0,.35);
   outline-offset: 2px;
   box-shadow: 0 0 0 4px rgba(255,152,0,.15);
+}
+
+
+.heart-icon{
+  width: 26px;
+  height: 26px;
+  display: block;
+  fill: none;                   
+  stroke: #ff5a79;
+  stroke-width: 2px;
+  transition: transform .15s ease, fill .18s ease, stroke .18s ease;
+}
+.like-bubble:hover .heart-icon{ transform: scale(1.08); }
+.like-bubble.active .heart-icon{
+  fill:#ff5a79;                 
+  stroke:#ff5a79;
+}
+.like-bubble{
+  border: 1px solid #ffd6a7;
+  background: #fff;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  line-height: 0;
+  place-items: center;
+}
+.like-bubble.active{ 
+  background:#fff7f0;
+  border-color:#ffc480; 
+  box-shadow: 0 8px 18px rgba(255,90,121,.16);
+}
+.load-more {
+  display: flex;
+  justify-content: center;
+  margin-top: 16px;
 }
 
 
