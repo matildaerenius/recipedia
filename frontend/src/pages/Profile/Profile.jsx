@@ -1,6 +1,29 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import axiosPrivate from "../../config/axiosPrivate";
 import "./Profile.css";
+
+// Normalisera olika möjliga former på backend-svaret
+const normalizeUser = (raw) => {
+  const r = raw || {};
+  const pick = (...keys) => {
+    for (const k of keys) if (r[k] !== undefined && r[k] !== null) return r[k];
+    return "";
+  };
+  const pref = (
+    pick("preference", "dietPreference", "diet_preference") || "NONE"
+  )
+    .toString()
+    .toUpperCase();
+
+  return {
+    firstName: pick("firstName", "firstname", "first_name"),
+    lastName: pick("lastName", "lastname", "last_name"),
+    username: pick("username", "userName", "name"),
+    email: pick("email"),
+    address: pick("address", "adress"),
+    preference: pref,
+  };
+};
 
 const Profile = () => {
   const [loading, setLoading] = useState(true);
@@ -18,55 +41,47 @@ const Profile = () => {
 
   const [preference, setPreference] = useState("NONE");
 
-  const token = useMemo(
-    () => localStorage.getItem("jwt") || sessionStorage.getItem("jwt"),
-    []
-  );
+  const fetchMe = useCallback(async () => {
+    setError("");
+    try {
+      setLoading(true);
+
+      const res = await axiosPrivate.get("/api/user/me");
+
+      const root = res?.data?.data ?? res?.data?.user ?? res?.data ?? {};
+
+      const u = normalizeUser(root);
+      setForm({
+        firstName: u.firstName || "",
+        lastName: u.lastName || "",
+        username: u.username || "",
+        email: u.email || "",
+        address: u.address || "",
+      });
+      setPreference(u.preference || "NONE");
+    } catch (e) {
+      const status = e?.response?.status;
+      setError(
+        e?.response?.data?.message ||
+          (status === 401
+            ? "Not logged in."
+            : `Failed to load profile (status ${status ?? "?"}).`)
+      );
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
     let active = true;
-
-    const loadMe = async () => {
-      setLoading(true);
-      setError("");
-
-      if (!token) {
-        setError("Not logged in.");
-        setLoading(false);
-        return;
-      }
-
-      try {
-        const res = await axiosPrivate.get("/api/user/me");
-        if (!active) return;
-
-        console.log("GET /api/user/me ->", res.status, res.data); // <— see what we got
-
-        const me = res.data || {};
-        setForm({
-          firstName: me.firstName ?? "",
-          lastName: me.lastName ?? "",
-          username: me.username ?? "",
-          email: me.email ?? "",
-          address: me.address ?? "",
-        });
-        setPreference((me.preference || "NONE").toString().toUpperCase());
-      } catch (e) {
-        console.error("Fetch /api/user/me failed:", e);
-        setError(
-          e.response?.data?.message ||
-            `Failed to load profile (status ${e.response?.status ?? "?"}).`
-        );
-      } finally {
-        if (active) setLoading(false);
-      }
-    };
-
-    loadMe();
+    (async () => {
+      if (!active) return;
+      await fetchMe();
+    })();
     return () => {
       active = false;
     };
-  }, [token]);
+  }, [fetchMe]);
 
   const onChange = (e) => {
     const { name, value } = e.target;
@@ -84,8 +99,9 @@ const Profile = () => {
         email: form.email || null,
         address: form.address || null,
       });
+      await fetchMe();
     } catch (e) {
-      setError(e.response?.data?.message || "Could not save profile.");
+      setError(e?.response?.data?.message || "Could not save profile.");
     } finally {
       setSaving(false);
     }
@@ -95,11 +111,14 @@ const Profile = () => {
     setPrefSaving(true);
     setError("");
     try {
-      await axiosPrivate.put("/api/user/preference", preference, {
-        headers: { "Content-Type": "application/json" },
-      });
+      await axiosPrivate.put(
+        "/api/user/preference",
+        { preference },
+        { headers: { "Content-Type": "application/json" } }
+      );
+      await fetchMe();
     } catch (e) {
-      setError(e.response?.data?.message || "Could not save preference.");
+      setError(e?.response?.data?.message || "Could not save preference.");
     } finally {
       setPrefSaving(false);
     }
@@ -119,7 +138,7 @@ const Profile = () => {
     <div className="profile-page">
       <div className="profile-grid">
         <section className="profile-card">
-          <h2>Min profil</h2>
+          <h2>My profile</h2>
 
           <div className="profile-two-col">
             <div className="form-group">
@@ -181,23 +200,23 @@ const Profile = () => {
             onClick={saveProfile}
             disabled={saving}
           >
-            {saving ? "Sparar…" : "Spara profil"}
+            {saving ? "Saving…" : "Save profile"}
           </button>
         </section>
 
         <section className="profile-card">
-          <h2>Kostpreferens</h2>
-          <p className="hint">Används i recept-matchning och filtrering.</p>
+          <h2>Diet preference</h2>
+          <p className="hint">Used in generated recipes</p>
 
           <div className="chips">
             {[
-              { key: "NONE", label: "Ingen" },
+              { key: "NONE", label: "None" },
               { key: "VEGAN", label: "Vegan" },
               { key: "VEGETARIAN", label: "Vegetarian" },
-              { key: "LACTOSE_FREE", label: "Laktosfri" },
-              { key: "GLUTEN_FREE", label: "Glutenfri" },
+              { key: "LACTOSE_FREE", label: "Lactose-free" },
+              { key: "GLUTEN_FREE", label: "Gluten-free" },
               { key: "DAIRY_FREE", label: "Dairy-free" },
-              { key: "NUT_FREE", label: "Nötfri" },
+              { key: "NUT_FREE", label: "Nut-free" },
             ].map((opt) => (
               <button
                 key={opt.key}
@@ -218,7 +237,7 @@ const Profile = () => {
             onClick={savePreference}
             disabled={prefSaving}
           >
-            {prefSaving ? "Sparar…" : "Spara preferens"}
+            {prefSaving ? "Saving…" : "Save preference"}
           </button>
         </section>
       </div>

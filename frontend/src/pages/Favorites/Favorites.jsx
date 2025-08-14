@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axiosPrivate from "../../config/axiosPrivate";
-import "../Home/Home.css"; // återanvänd stilar
+import "../Home/Home.css";
 
 const Favorites = () => {
-  const [items, setItems] = useState([]); // SavedRecipeResponse[]
+  const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
@@ -23,13 +23,12 @@ const Favorites = () => {
   };
 
   const remove = async (savedId) => {
-    // optimistic
     const prev = items;
     setItems(prev.filter((x) => x.id !== savedId));
     try {
       await axiosPrivate.delete(`/api/saved-recipes/${savedId}`);
     } catch (e) {
-      setItems(prev); // rollback
+      setItems(prev);
       console.error(e);
       alert("Failed to remove favorite. Try again.");
     }
@@ -44,7 +43,7 @@ const Favorites = () => {
       <div className="container">
         <div className="search-header card">
           <div className="search-header-content">
-            <h1>Favorites</h1>
+            <h1>My Favorites</h1>
           </div>
           {error && (
             <p className="alert" role="alert">
@@ -59,7 +58,7 @@ const Favorites = () => {
           <div className="recipe-grid">
             {items.map((item) => (
               <article key={item.id} className="recipe-card card">
-                {/* Hjärt-bubbla (aktiv) */}
+                {}
                 <button
                   className="like-bubble active"
                   onClick={() => remove(item.id)}

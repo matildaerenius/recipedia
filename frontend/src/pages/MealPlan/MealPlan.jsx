@@ -1,9 +1,9 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, useCallback } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axiosPrivate from "../../config/axiosPrivate";
 import "./MealPlan.css";
 
-// Ordning: Mån–Sön
+// Days Monday–Sunday for backend DayOfWeek enum
 const DAYS = [
   "MONDAY",
   "TUESDAY",
@@ -14,33 +14,40 @@ const DAYS = [
   "SUNDAY",
 ];
 const DAY_LABEL = {
-  MONDAY: "Måndag",
-  TUESDAY: "Tisdag",
-  WEDNESDAY: "Onsdag",
-  THURSDAY: "Torsdag",
-  FRIDAY: "Fredag",
-  SATURDAY: "Lördag",
-  SUNDAY: "Söndag",
+  MONDAY: "Monday",
+  TUESDAY: "Tuesday",
+  WEDNESDAY: "Wednesday",
+  THURSDAY: "Thursday",
+  FRIDAY: "Friday",
+  SATURDAY: "Saturday",
+  SUNDAY: "Sunday",
 };
 
-const emptyEntry = { recipeId: null, title: "", imageUrl: "" };
+const normalizeFavorite = (raw) => {
+  const r = raw || {};
+  const rec = r.recipe || {};
+  return {
+    id: r.recipeId ?? r.id ?? rec.id ?? null,
+    title: r.title ?? r.name ?? rec.title ?? "",
+    image: r.imageUrl ?? r.image ?? rec.imageUrl ?? rec.image ?? "",
+  };
+};
 
 export default function MealPlan() {
   const [plan, setPlan] = useState({ weekStart: null, entries: [] });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // Modal/form state
+  const [favorites, setFavorites] = useState([]);
+  const [favFilter, setFavFilter] = useState("");
+
   const [showModal, setShowModal] = useState(false);
   const [activeDay, setActiveDay] = useState(null);
-  const [form, setForm] = useState(emptyEntry);
 
-  // Support “välj dag för recept” när man navigerar hit med state
   const location = useLocation();
   const navigate = useNavigate();
   const pickedRecipe = location.state?.recipe || null;
 
-  // indexera entries per dag för enkel render
   const byDay = useMemo(() => {
     const map = {};
     (plan.entries || []).forEach((e) => {
@@ -49,71 +56,42 @@ export default function MealPlan() {
     return map;
   }, [plan]);
 
-  const fetchPlan = async () => {
+  const fetchPlan = useCallback(async () => {
     setLoading(true);
     setError("");
     try {
       const res = await axiosPrivate.get("/api/mealplan/week");
       setPlan(res.data || { weekStart: null, entries: [] });
     } catch (e) {
-      setError(e?.response?.data || "Kunde inte hämta veckans plan.");
+      setError(
+        e?.response?.data?.message || "Could not load this week's plan."
+      );
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  const fetchFavorites = useCallback(async () => {
+    try {
+      const res = await axiosPrivate.get("/api/saved-recipes");
+      const list = Array.isArray(res.data) ? res.data : res.data?.items || [];
+      setFavorites(list.map(normalizeFavorite).filter((f) => !!f.id));
+    } catch (e) {
+      console.error("GET /api/saved-recipes failed:", e);
+      setFavorites([]);
+    }
+  }, []);
 
   useEffect(() => {
     fetchPlan();
-  }, []);
-
-  const openAddForDay = (day) => {
-    setActiveDay(day);
-    // Om vi har ett valt recept via navigation → förifyll och lägg direkt
-    if (pickedRecipe) {
-      handleAdd(day, {
-        recipeId: pickedRecipe.id,
-        title: pickedRecipe.title,
-        imageUrl: pickedRecipe.image,
-      });
-      return;
-    }
-    // annars visa modal för manuellt val/inmatning
-    setForm(emptyEntry);
-    setShowModal(true);
-  };
-
-  const handleAdd = async (day, data) => {
-    try {
-      await axiosPrivate.post("/api/mealplan/add", {
-        dayOfWeek: day,
-        recipeId: Number(data.recipeId),
-        title: data.title,
-        imageUrl: data.imageUrl,
-      });
-      setShowModal(false);
-      setActiveDay(null);
-      await fetchPlan();
-      // rensa pickat recept från history när det placerats
-      if (pickedRecipe) navigate(".", { replace: true, state: {} });
-    } catch (e) {
-      alert(e?.response?.data || "Kunde inte spara på dagen.");
-    }
-  };
-
-  const handleRemove = async (day) => {
-    try {
-      await axiosPrivate.delete(`/api/mealplan/remove/${day}`);
-      await fetchPlan();
-    } catch (e) {
-      alert(e?.response?.data || "Kunde inte ta bort från dagen.");
-    }
-  };
+    fetchFavorites();
+  }, [fetchPlan, fetchFavorites]);
 
   const weekLabel = useMemo(() => {
     if (!plan.weekStart) return "";
     try {
       const d = new Date(plan.weekStart);
-      return d.toLocaleDateString("sv-SE", {
+      return d.toLocaleDateString("en-GB", {
         year: "numeric",
         month: "short",
         day: "numeric",
@@ -123,6 +101,57 @@ export default function MealPlan() {
     }
   }, [plan.weekStart]);
 
+  const handleAdd = async (day, fav) => {
+    try {
+      await axiosPrivate.post("/api/mealplan/add", {
+        dayOfWeek: day,
+        recipeId: Number(fav.id),
+        title: fav.title,
+        imageUrl: fav.image,
+      });
+      setShowModal(false);
+      setActiveDay(null);
+      await fetchPlan();
+      if (pickedRecipe) navigate(".", { replace: true, state: {} });
+    } catch (e) {
+      alert(e?.response?.data?.message || "Could not save meal plan entry.");
+    }
+  };
+
+  const handleRemove = async (day) => {
+    try {
+      await axiosPrivate.delete(`/api/mealplan/remove/${day}`);
+      await fetchPlan();
+    } catch (e) {
+      alert(e?.response?.data?.message || "Could not remove from that day.");
+    }
+  };
+
+  const openPickerForDay = (day) => {
+    setActiveDay(day);
+
+    if (pickedRecipe) {
+      const normalized = normalizeFavorite(pickedRecipe);
+      const isFav = favorites.some(
+        (f) => String(f.id) === String(normalized.id)
+      );
+      if (isFav && normalized.id) {
+        handleAdd(day, normalized);
+        return;
+      } else {
+        alert("Only recipes in your Favorites can be added to the meal plan.");
+      }
+    }
+
+    setShowModal(true);
+  };
+
+  const filteredFavorites = useMemo(() => {
+    const q = favFilter.trim().toLowerCase();
+    if (!q) return favorites;
+    return favorites.filter((f) => f.title.toLowerCase().includes(q));
+  }, [favorites, favFilter]);
+
   return (
     <div className="home-page meal-page">
       <div className="container">
@@ -130,16 +159,17 @@ export default function MealPlan() {
           <div className="search-header-content">
             <h1>Meal Plan</h1>
             {weekLabel && (
-              <p className="week-subtle">Vecka start: {weekLabel}</p>
+              <p className="week-subtle">Week starts: {weekLabel}</p>
             )}
+
             {pickedRecipe && (
               <div className="pick-banner">
-                Välj en dag för: <strong>{pickedRecipe.title}</strong>
+                Pick a day for: <strong>{pickedRecipe.title}</strong>
                 <button
                   className="link-cancel"
                   onClick={() => navigate(".", { replace: true, state: {} })}
                 >
-                  Avbryt
+                  Cancel
                 </button>
               </div>
             )}
@@ -152,7 +182,7 @@ export default function MealPlan() {
         </div>
 
         {loading ? (
-          <p className="loading">Laddar...</p>
+          <p className="loading">Loading…</p>
         ) : (
           <div className="week-grid">
             {DAYS.map((day) => {
@@ -165,9 +195,9 @@ export default function MealPlan() {
                       <button
                         className="btn btn-danger btn-small"
                         onClick={() => handleRemove(day)}
-                        title="Ta bort från dagen"
+                        title="Remove from day"
                       >
-                        Ta bort
+                        Remove
                       </button>
                     ) : null}
                   </header>
@@ -193,26 +223,26 @@ export default function MealPlan() {
                               navigate(`/recipes/${entry.recipeId}`)
                             }
                           >
-                            Visa recept
+                            View recipe
                           </button>
                           <button
-                            className="btn"
-                            onClick={() => openAddForDay(day)}
-                            title="Ersätt med annat recept"
+                            className="btn btn-ghost"
+                            onClick={() => openPickerForDay(day)}
+                            title="Replace with another favorite"
                           >
-                            Byt recept
+                            Change
                           </button>
                         </div>
                       </div>
                     </>
                   ) : (
                     <div className="empty-slot">
-                      <p>Ingen rätt vald.</p>
+                      <p>No recipe selected</p>
                       <button
                         className="btn btn-primary"
-                        onClick={() => openAddForDay(day)}
+                        onClick={() => openPickerForDay(day)}
                       >
-                        Lägg till
+                        Add
                       </button>
                     </div>
                   )}
@@ -223,66 +253,64 @@ export default function MealPlan() {
         )}
       </div>
 
-      {/* Modal för manuell inmatning */}
+      {/* Favorites picker modal */}
       {showModal && (
         <div className="modal-backdrop" onClick={() => setShowModal(false)}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <h2>Lägg till recept – {activeDay ? DAY_LABEL[activeDay] : ""}</h2>
+            <h2>Pick a favorite – {activeDay ? DAY_LABEL[activeDay] : ""}</h2>
 
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                if (!form.recipeId || !form.title) return;
-                handleAdd(activeDay, form);
-              }}
-            >
-              <label className="field">
-                <span>Recipe ID</span>
-                <input
-                  type="number"
-                  value={form.recipeId || ""}
-                  onChange={(e) =>
-                    setForm({ ...form, recipeId: e.target.value })
-                  }
-                  required
-                />
-              </label>
+            <div className="field" style={{ marginBottom: 12 }}>
+              <input
+                type="text"
+                placeholder="Search favorites…"
+                value={favFilter}
+                onChange={(e) => setFavFilter(e.target.value)}
+              />
+            </div>
 
-              <label className="field">
-                <span>Titel</span>
-                <input
-                  type="text"
-                  value={form.title}
-                  onChange={(e) => setForm({ ...form, title: e.target.value })}
-                  required
-                />
-              </label>
+            {favorites.length === 0 ? (
+              <p className="hint">
+                You have no favorites yet. Go to <strong>Favorites</strong> to
+                add some!
+              </p>
+            ) : (
+              <div className="favorite-grid">
+                {filteredFavorites.map((fav) => (
+                  <button
+                    key={fav.id}
+                    type="button"
+                    className="favorite-card"
+                    onClick={() => handleAdd(activeDay, fav)}
+                    title="Use this recipe"
+                  >
+                    <div className="image-wrap">
+                      {fav.image ? (
+                        <img src={fav.image} alt={fav.title} loading="lazy" />
+                      ) : (
+                        <div className="no-image">No image</div>
+                      )}
+                    </div>
+                    <div className="fav-title" title={fav.title}>
+                      {fav.title}
+                    </div>
+                  </button>
+                ))}
 
-              <label className="field">
-                <span>Bild-URL</span>
-                <input
-                  type="url"
-                  placeholder="https://..."
-                  value={form.imageUrl}
-                  onChange={(e) =>
-                    setForm({ ...form, imageUrl: e.target.value })
-                  }
-                />
-              </label>
-
-              <div className="modal-actions">
-                <button type="submit" className="btn btn-primary">
-                  Spara
-                </button>
-                <button
-                  type="button"
-                  className="btn"
-                  onClick={() => setShowModal(false)}
-                >
-                  Avbryt
-                </button>
+                {filteredFavorites.length === 0 && (
+                  <p className="hint">No favorites match your search.</p>
+                )}
               </div>
-            </form>
+            )}
+
+            <div className="modal-actions">
+              <button
+                type="button"
+                className="btn"
+                onClick={() => setShowModal(false)}
+              >
+                Close
+              </button>
+            </div>
           </div>
         </div>
       )}
