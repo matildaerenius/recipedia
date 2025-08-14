@@ -10,6 +10,7 @@ public class IngredientMapper {
                 ingredient.getId(),
                 ingredient.getName(),
                 ingredient.getQuantity(),
+                ingredient.getUnit(),
                 ingredient.getCategory()
         );
     }

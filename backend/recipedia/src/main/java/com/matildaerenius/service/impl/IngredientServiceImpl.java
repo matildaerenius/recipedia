@@ -7,6 +7,7 @@ import com.matildaerenius.entity.User;
 import com.matildaerenius.exception.UserException;
 import com.matildaerenius.mapper.IngredientMapper;
 import com.matildaerenius.model.IngredientCategory;
+import com.matildaerenius.model.Unit;
 import com.matildaerenius.repository.IngredientRepository;
 import com.matildaerenius.repository.UserRepository;
 import com.matildaerenius.security.util.JwtTokenProvider;
@@ -32,12 +33,13 @@ public class IngredientServiceImpl implements IngredientService {
     }
 
         @Override
-        public IngredientResponse addIngredient(String token, String name, int quantity, IngredientCategory category) {
+        public IngredientResponse addIngredient(String token, String name, int quantity, Unit unit, IngredientCategory category) {
             User user = getUserFromToken(token);
 
             Ingredient ingredient = Ingredient.builder()
                     .name(name)
                     .quantity(quantity)
+                    .unit(unit)
                     .category(category)
                     .user(user)
                     .build();
@@ -68,7 +70,7 @@ public class IngredientServiceImpl implements IngredientService {
         }
 
     @Override
-    public IngredientResponse updateIngredient(String token, Long ingredientId, String name, Integer quantity, IngredientCategory category) {
+    public IngredientResponse updateIngredient(String token, Long ingredientId, String name, Integer quantity, Unit unit, IngredientCategory category) {
         User user = getUserFromToken(token);
         Ingredient ingredient = ingredientRepository.findById(ingredientId)
                 .orElseThrow(() -> new RuntimeException("Ingredient not found"));
@@ -81,6 +83,7 @@ public class IngredientServiceImpl implements IngredientService {
         if (quantity != null) {
             ingredient.setQuantity(quantity);
         }
+        if (unit != null) ingredient.setUnit(unit);
         if (category != null) ingredient.setCategory(category);
 
 

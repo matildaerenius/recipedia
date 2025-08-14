@@ -23,7 +23,7 @@ public class IngredientController {
             @RequestHeader("Authorization") String token,
             @RequestBody @Valid CreateIngredientRequest request
     ) {
-        return ingredientService.addIngredient(token, request.getName(), request.getQuantity(), request.getCategory());
+        return ingredientService.addIngredient(token, request.getName(), request.getQuantity(), request.getUnit(), request.getCategory());
     }
 
     @GetMapping
@@ -46,7 +46,7 @@ public class IngredientController {
             @PathVariable Long id,
             @RequestBody @Valid UpdateIngredientRequest request
     ) {
-        return ingredientService.updateIngredient(token, id, request.getName(),  request.getQuantity(), request.getCategory());
+        return ingredientService.updateIngredient(token, id, request.getName(),  request.getQuantity(), request.getUnit(), request.getCategory());
     }
 
     @GetMapping("/search")

@@ -1,6 +1,7 @@
 package com.matildaerenius.entity;
 
 import com.matildaerenius.model.IngredientCategory;
+import com.matildaerenius.model.Unit;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,6 +24,10 @@ public class Ingredient {
 
     @Column(nullable = false)
     private int quantity;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 10)
+    private Unit unit;
 
     @Enumerated(EnumType.STRING)
     private IngredientCategory category;
