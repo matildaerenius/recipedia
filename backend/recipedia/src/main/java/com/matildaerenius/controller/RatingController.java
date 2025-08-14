@@ -2,6 +2,7 @@ package com.matildaerenius.controller;
 
 import com.matildaerenius.dto.request.RatingRequest;
 import com.matildaerenius.dto.response.RatingResponse;
+import com.matildaerenius.dto.response.UserRatingResponse;
 import com.matildaerenius.entity.User;
 import com.matildaerenius.exception.UserException;
 import com.matildaerenius.repository.UserRepository;
@@ -10,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/ratings")
@@ -39,5 +42,9 @@ public class RatingController {
     @GetMapping("/{recipeId}")
     public ResponseEntity<RatingResponse> getRating(@PathVariable Long recipeId) {
         return ResponseEntity.ok(recipeRatingService.getAverageRating(recipeId));
+    }
+    @GetMapping("/my")
+    public ResponseEntity<List<UserRatingResponse>> myRatings(Authentication auth) {
+        return ResponseEntity.ok(recipeRatingService.getUserRatings(getUser(auth)));
     }
 }

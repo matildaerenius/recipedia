@@ -5,6 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+
+import java.time.Instant;
 
 @Entity
 @Data
@@ -14,7 +17,7 @@ import lombok.NoArgsConstructor;
 public class Rating {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     private Long recipeId;
 
@@ -23,6 +26,10 @@ public class Rating {
 
     @Column(length = 1000)
     private String comment;
+
+//    @CreationTimestamp
+//    @Column(updatable = false)
+//    private Instant createdAt;
 
     @ManyToOne(optional = false)
     private User user;

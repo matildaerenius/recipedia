@@ -2,6 +2,7 @@ package com.matildaerenius.service.impl;
 
 import com.matildaerenius.dto.request.RatingRequest;
 import com.matildaerenius.dto.response.RatingResponse;
+import com.matildaerenius.dto.response.UserRatingResponse;
 import com.matildaerenius.entity.Rating;
 import com.matildaerenius.entity.User;
 import com.matildaerenius.repository.RatingRepository;
@@ -9,6 +10,7 @@ import com.matildaerenius.service.RatingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -46,5 +48,18 @@ public class RatingServiceImpl implements RatingService {
 
         double avg = ratings.stream().mapToInt(Rating::getRating).average().orElse(0.0);
         return new RatingResponse(recipeId, avg, ratings.size());
+    }
+    @Override
+    public List<UserRatingResponse> getUserRatings(User user) {
+        return ratingRepository.findByUser(user).stream()
+
+                .sorted(Comparator.comparing(Rating::getId).reversed())
+                .map(r -> new UserRatingResponse(
+                        r.getId(),
+                        r.getRecipeId(),
+                        r.getRating(),
+                        r.getComment()
+                ))
+                .toList();
     }
 }
