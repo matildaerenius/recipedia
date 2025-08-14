@@ -1,7 +1,10 @@
 package com.matildaerenius.controller;
 
+import com.matildaerenius.dto.request.PreferenceUpdateRequest;
 import com.matildaerenius.dto.request.UpdateUserRequest;
+import com.matildaerenius.dto.response.UserResponse;
 import com.matildaerenius.entity.User;
+import com.matildaerenius.mapper.UserMapper;
 import com.matildaerenius.model.Preference;
 import com.matildaerenius.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -30,10 +33,10 @@ public class UserController {
         return ResponseEntity.ok("User deleted successfully");
     }
     @GetMapping("/me")
-    public ResponseEntity<User> me() {
+    public ResponseEntity<UserResponse> me() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userService.getByUsername(username);
-        return ResponseEntity.ok(user);
+        return ResponseEntity.ok(UserMapper.toDto(user));
     }
     @GetMapping("/preference")
     public ResponseEntity<Preference> getPreference() {
@@ -43,12 +46,12 @@ public class UserController {
     }
 
     @PutMapping("/preference")
-    public ResponseEntity<User> setPreference(@RequestBody Preference preference) {
+    public ResponseEntity<Preference> setPreference(@RequestBody PreferenceUpdateRequest body) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         UpdateUserRequest req = new UpdateUserRequest();
-        req.setPreference(preference);
+        req.setPreference(body.getPreference());
         User updated = userService.updateUser(username, req);
-        return ResponseEntity.ok(updated);
+        return ResponseEntity.ok(updated.getPreference());
     }
 
 

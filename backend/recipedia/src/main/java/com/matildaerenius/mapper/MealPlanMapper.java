@@ -6,7 +6,7 @@ import com.matildaerenius.entity.MealPlan;
 
 import java.util.List;
 
-public class MealPlanMapper {
+public final class MealPlanMapper {
 
     public static MealPlanResponse toDto(MealPlan plan) {
         List<MealPlanEntryResponse> entries = plan.getEntries().stream()

@@ -1,5 +1,6 @@
 package com.matildaerenius.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.matildaerenius.model.Preference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
@@ -20,11 +21,12 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @Column(nullable = false, unique = true)
     private String username;
 
+    @JsonIgnore
     @NotBlank
     @Size(min = 8)
     @Column(nullable = false)

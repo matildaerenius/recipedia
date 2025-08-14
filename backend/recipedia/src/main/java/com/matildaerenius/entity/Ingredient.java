@@ -1,5 +1,6 @@
 package com.matildaerenius.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.matildaerenius.model.IngredientCategory;
 import com.matildaerenius.model.Unit;
 import jakarta.persistence.*;
@@ -34,5 +35,6 @@ public class Ingredient {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonIgnore
     private User user;
 }
