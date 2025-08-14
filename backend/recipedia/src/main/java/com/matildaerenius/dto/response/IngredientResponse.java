@@ -8,7 +8,7 @@ import lombok.Data;
 @AllArgsConstructor
 public class IngredientResponse {
 
-    private Integer id;
+    private Long id;
     private String name;
     private int quantity;
     private IngredientCategory category;

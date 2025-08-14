@@ -15,6 +15,6 @@ public class CreateIngredientRequest {
 
     private int quantity;
 
-    @Enumerated(EnumType.STRING)
-    IngredientCategory category;
+    @NotNull(message = "category is required")
+    private IngredientCategory category;
 }
